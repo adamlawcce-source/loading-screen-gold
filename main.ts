@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 // One loading-screen tip, written for a stressed developer watching an AI
 // coding agent work: the agent is not stuck, it is re-reading the docs the
@@ -21,3 +21,9 @@ if (codePoints < 1 || codePoints > 200) {
 }
 
 writeFileSync("/output/entry.txt", TEXT, "utf8");
+
+// Verify the write round-trips byte-for-byte, so a truncated or partial
+// write fails loudly instead of shipping a corrupted entry.
+if (readFileSync("/output/entry.txt", "utf8") !== TEXT) {
+  throw new Error("entry.txt does not match the tip text after writing");
+}
